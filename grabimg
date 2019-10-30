@@ -1,0 +1,17 @@
+#!/usr/bin/env python3
+import subprocess
+import os.path as fs
+
+PATH = "~/public_html/image_grab"
+
+def download(url,location=fs.expanduser(PATH)):
+	rc = subprocess.run(["/usr/bin/wget","-P",location,url]).returncode
+	if rc==0:
+		return subprocess.check_output(["rawurlme",fs.join(location,fs.basename(url))])
+
+import argparse
+if __name__=="__main__":
+	parser = argparse.ArgumentParser()
+	parser.add_argument("url",help="The URL of the image.")
+	args = parser.parse_args()
+	print(download(args.url).decode("utf-8").strip())

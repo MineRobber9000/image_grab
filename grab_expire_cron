@@ -1,0 +1,40 @@
+#!/home/khuxkm/bin/python
+import os, time, math
+import os.path as fs
+
+PATH = "~/public_html/image_grab"
+IMAGE_EXTS = [".png",".jpg",".gif"]
+VERBOSE = False
+
+extension = lambda x: fs.splitext(x)[1]
+PATH = fs.expanduser(PATH)
+
+class chdir:
+	def __init__(self,newPath,relative=False):
+		self.newPath = newPath
+		if relative:
+			self.newPath = fs.join(os.getcwd(),newPath)
+	def __enter__(self,*args):
+		self.curPath = os.getcwd()
+		os.chdir(self.newPath)
+	def __exit__(self,*args):
+		os.chdir(self.curPath)
+		del self.curPath
+
+NOW = time.time()
+
+log = []
+
+with chdir(PATH):
+	images = [x for x in os.listdir() if extension(x) in IMAGE_EXTS]
+	mtime = {k: fs.getmtime(k) for k in images}
+	for k in mtime.keys():
+		if ((NOW-mtime[k])/(1000*60))>1:
+			os.remove(k)
+			log.append("Removed file {} (was {:01.02f} hour(s) old)".format(k,((NOW-mtime[k])/(1000*60))))
+		else:
+			log.append("File {} is {} hours old".format(k,((NOW-mtime[k])/(1000*60))))
+
+if VERBOSE:
+	for line in log:
+		print(line)

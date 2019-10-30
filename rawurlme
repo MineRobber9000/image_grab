@@ -1,0 +1,11 @@
+#!/bin/bash
+
+# site protocol
+PROTOCOL="https"
+# where your web root is stored
+ROOT="khuxkm.tilde.team"
+# the location of your page root (with your username replaced with "username")
+PUBLIC_HTML="\/home\/username\/public_html"
+
+printf $1 | sed -e "s/$(whoami)/username/g" | sed -e "s/$PUBLIC_HTML/$PROTOCOL:\/\/$ROOT/"
+echo
